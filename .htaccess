@@ -1,0 +1,34 @@
+# ── Cyclone Store ──────────────────────────────────────────────
+
+# Pretty URLs (store pages)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  RewriteRule ^apps/([a-z0-9\-]+)/?$ app.php?slug=$1 [L,QSA]
+  RewriteRule ^download/([a-zA-Z0-9\-]+)/?$ download.php?id=$1 [L,QSA]
+  RewriteRule ^admin/?$ admin.php [L,QSA]
+  RewriteRule ^admin/new/?$ admin-new.php [L,QSA]
+  RewriteRule ^admin/edit/([a-zA-Z0-9\-]+)/?$ admin-edit.php?id=$1 [L,QSA]
+  RewriteRule ^admin-login/?$ admin-login.php [L,QSA]
+</IfModule>
+
+# Never serve the SQLite database or dotfiles
+<FilesMatch "\.(db|sqlite|sqlite3|sqlite-journal|sqlite-wal|sqlite-shm)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+# Gzip text assets
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+</IfModule>
+
+# Browser caching for static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css              "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/svg+xml         "access plus 30 days"
+</IfModule>
