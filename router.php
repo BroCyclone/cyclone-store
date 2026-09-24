@@ -1,13 +1,17 @@
 <?php
-// router.php - PHP built-in server အတွက် Routing များကို စီမံပေးသည့် script
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$file = __DIR__ . $uri;
 
-$uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-
-// Requested တောင်းဆိုထားသော static file (CSS, JS, Image စသည်) ရှိလျှင် တိုက်ရိုက် ပြသမည်
-if ($uri !== '/' && file_exists(__DIR__ . $uri) && !is_dir(__DIR__ . $uri)) {
+// ၁။ ဖိုင်အဖြစ် တကယ်ရှိနေပါက (admin.php, admin-login.php, tools/seed.php, assets စသည်)
+if ($uri !== '/' && is_file($file)) {
     return false;
 }
 
-// ကျန် Route တောင်းဆိုမှု အားလုံးကို index.php သို့ လွှဲပေးမည်
-require_once __DIR__ . '/index.php';
+// ၂။ .php Extension မပါဘဲ ခေါ်ဆိုပါက (ဥပမာ /admin သို့မဟုတ် /admin-login)
+if (is_file($file . '.php')) {
+    require $file . '.php';
+    exit;
+}
 
+// ၃။ သီးသန့် အခြားမရှိသော လမ်းကြောင်းများကိုသာ index.php သို့ ပို့မည်
+require __DIR__ . '/index.php';
